@@ -23,14 +23,23 @@ object Total {
 trait Item {
   def cost: Double
   def num: Int
-  def subTotal: Double = cost * num
+  def discount : Double
+  def subTotal: Double = (cost * num) - discount
+
 }
 
 case class Apple(num: Int) extends Item {
   override val cost = 0.60
+  override val discount: Double = cost
 }
 
 case class Orange(num: Int) extends Item{
   override val cost = 0.25
+  override def discount: Double = {
+    num / 3 match {
+      case res if res >= 1 => res * cost
+      case _ => 0
+    }
+  }
 }
 
