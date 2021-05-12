@@ -1,7 +1,7 @@
 package step1
 
 object Checkout {
-  def apply (items: List[String]): Double = {
+  def apply (items: List[String]): BigDecimal = {
     val chart = Basket(items.groupMapReduce(identity)(_ => 1)(_ + _))
     val chartToProcess = chart.chartList.getOrElse(Apple.name, 1) > 1 && chart.chartList.getOrElse(Banana.name, 1) > 1 match {
       case true =>
@@ -21,23 +21,19 @@ object Checkout {
         }
     }
   }
-
-  def discountBundle(apple: Apple) (banana: Banana): Any = {
-
-  }
 }
 
 case class Basket (chartList: Map[String, Int]) extends AnyVal
-case class Total(price: Double)
+case class Total(price: BigDecimal)
 object Total {
-  val empty = 0.0
+  val empty: BigDecimal = 0.0
 }
 
 trait Item extends Ordered[Item] {
-  def cost: Double
+  def cost: BigDecimal
   def num: Int
-  def discount : Double = 0
-  def subTotal: Double = (cost * num) - discount
+  def discount : BigDecimal = 0
+  def subTotal: BigDecimal = (cost * num) - discount
   def compare(that: Item): Int = {
     this.subTotal - that.subTotal match {
       case res if res >= 0 => 1
@@ -48,7 +44,7 @@ trait Item extends Ordered[Item] {
 
 case class Apple(num: Int) extends Item {
   override val cost = 0.60
-  override val discount: Double = Discount(2, num, cost).discount
+  override val discount: BigDecimal = Discount(2, num, cost).discount
 }
 object Apple {
   val name = "Apple"
@@ -56,7 +52,7 @@ object Apple {
 
 case class Banana(num: Int) extends Item {
   override val cost = 0.20
-  override val discount: Double = Discount(2, num, cost).discount
+  override val discount: BigDecimal = Discount(2, num, cost).discount
 }
 object Banana {
   val name = "Banana"
@@ -64,14 +60,14 @@ object Banana {
 
 case class Orange(num: Int) extends Item  {
   override val cost = 0.25
-  override val discount: Double = Discount(3, num, cost).discount
+  override val discount: BigDecimal = Discount(3, num, cost).discount
 }
 object Orange {
   val name = "Orange"
 }
 
-case class Discount (opLeftDiscount : Int, numDisc: Int, cost: Double)  {
-  val discount: Double = numDisc / opLeftDiscount match {
+case class Discount (opLeftDiscount : Int, numDisc: Int, cost: BigDecimal)  {
+  val discount: BigDecimal = numDisc / opLeftDiscount match {
     case res if res >= 1 => res * cost
     case _ => 0
   }
